@@ -5,7 +5,11 @@ const urlRegex = require('./url-regex');
 
 const emailRe = emailRegex({ exact: true });
 
-exports.decorateTerm = function (Term, { React, notify }) {
+exports.getTermProps = function (uid, parentProps, props) {
+  return Object.assign(props, { uid });
+};
+
+exports.decorateTerm = function (Term, { React }) {
   return class extends React.Component {
     constructor (props, context) {
       super(props, context);
@@ -98,11 +102,19 @@ href="${escapeHTML(absoluteUrl)}">${escapeHTML(text)}</a>`;
       if (!cursorRowNode._autolinkHasListener) {
         cursorRowNode._autolinkHasListener = true;
         cursorRowNode.addEventListener('click', (e) => {
-          if ('A' === e.target.nodeName && e.metaKey) {
-            e.preventDefault();
+          if ('A' !== e.target.nodeName) return;
+
+          e.preventDefault();
+
+          if (e.metaKey) {
             // open in user's default browser when holding command key
             shell.openExternal(e.target.href);
-            return;
+          } else {
+            store.dispatch({
+              type: 'SESSION_URL_SET',
+              uid: this.props.uid,
+              url: e.target.href
+            });
           }
         });
       }
