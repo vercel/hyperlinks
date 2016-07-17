@@ -80,7 +80,6 @@ exports.decorateTerm = function (Term, { React, notify }) {
           text = url;
         }
         autolinked += `<a class="autolink"
-style="color:#ff2e88; text-decoration:none; border-bottom:1px solid #ff2e88"
 href="${escapeHTML(absoluteUrl)}">${escapeHTML(text)}</a>`;
       }
 
@@ -118,9 +117,21 @@ href="${escapeHTML(absoluteUrl)}">${escapeHTML(text)}</a>`;
 
     render () {
       const props = Object.assign({}, this.props, {
-        onTerminal: this.onTerminal
+        onTerminal: this.onTerminal,
+        customCSS: styles + (this.props.customCSS || '')
       });
       return React.createElement(Term, props);
     }
   };
 };
+
+const styles = `
+  .autolink {
+    color: #ff2e88;
+    text-decoration: none;
+  }
+
+  .autolink:hover {
+    text-decoration: underline;
+  }
+`;
