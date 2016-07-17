@@ -1,0 +1,126 @@
+const { shell } = require('electron');
+const escapeHTML = require('escape-html');
+const emailRegex = require('email-regex');
+const urlRegex = require('./url-regex');
+
+const emailRe = emailRegex({ exact: true });
+
+exports.decorateTerm = function (Term, { React, notify }) {
+  return class extends React.Component {
+    constructor (props, context) {
+      super(props, context);
+      this.onTerminal = this.onTerminal.bind(this);
+    }
+
+    onTerminal (term) {
+      if (this.props.onTerminal) {
+        this.props.onTerminal(term);
+      }
+
+      const { screen_ } = term;
+      const Screen = screen_.constructor;
+      this.overrideScreen(Screen);
+    }
+
+    overrideScreen (Screen) {
+      if (Screen._autolink) return;
+      Screen._autolink = true;
+
+      const self = this;
+
+      const { insertString, deleteChars } = Screen.prototype;
+
+      Screen.prototype.insertString = function () {
+        const result = insertString.apply(this, arguments);
+        self.autolink(this);
+        return result;
+      };
+
+      Screen.prototype.deleteChars = function () {
+        const result = deleteChars.apply(this, arguments);
+        self.autolink(this);
+        return result;
+      };
+    }
+
+    autolink (screen) {
+      let lastAnchor;
+
+      const cursorRowNode = screen.cursorRowNode_;
+      const previousCursorRowNode = cursorRowNode.previousSibling;
+      if (previousCursorRowNode &&
+        previousCursorRowNode.getAttribute('line-overflow') &&
+        previousCursorRowNode.lastChild &&
+        previousCursorRowNode.lastChild.lastChild &&
+        'A' === previousCursorRowNode.lastChild.lastChild.nodeName) {
+        // get last anchor from previous row
+        lastAnchor = previousCursorRowNode.lastChild.lastChild;
+      }
+
+      const textContent = (lastAnchor ? lastAnchor.textContent : '')
+        + screen.cursorNode_.textContent;
+
+      let re = urlRegex();
+      let autolinked = '';
+      let lastIndex = 0;
+      let match;
+
+      while (match = re.exec(textContent)) {
+        const url = match[0];
+        const absoluteUrl = this.getAbsoluteUrl(url);
+        const index = re.lastIndex - url.length;
+        autolinked += escapeHTML(textContent.slice(lastIndex, index));
+        lastIndex = re.lastIndex;
+
+        let text;
+        if (0 === index && lastAnchor) {
+          text = url.slice(lastAnchor.textContent.length);
+          lastAnchor.href = absoluteUrl;
+        } else {
+          text = url;
+        }
+        autolinked += `<a class="autolink"
+style="color:#ff2e88; text-decoration:none; border-bottom:1px solid #ff2e88"
+href="${escapeHTML(absoluteUrl)}">${escapeHTML(text)}</a>`;
+      }
+
+      autolinked += escapeHTML(textContent.slice(lastIndex));
+
+      let cursorNode = screen.cursorNode_;
+      if ('#text' === cursorNode.nodeName) {
+        // replace text node to element
+        cursorNode = document.createElement('span');
+        cursorRowNode.replaceChild(cursorNode, screen.cursorNode_);
+        screen.cursorNode_ = cursorNode;
+      }
+
+      cursorNode.innerHTML = autolinked;
+
+      if (!cursorRowNode._autolinkHasListener) {
+        cursorRowNode._autolinkHasListener = true;
+        cursorRowNode.addEventListener('click', (e) => {
+          if ('A' === e.target.nodeName && e.metaKey) {
+            e.preventDefault();
+            // open in user's default browser when holding command key
+            shell.openExternal(e.target.href);
+            return;
+          }
+        });
+      }
+    }
+
+    getAbsoluteUrl (url) {
+      if (/^[a-z]+:\/\//.test(url)) return url;
+      if (0 === url.indexOf('//')) return `http${url}`
+      if (emailRe.test(url)) return `mailto:${url}`;
+      return `http://${url}`;
+    }
+
+    render () {
+      const props = Object.assign({}, this.props, {
+        onTerminal: this.onTerminal
+      });
+      return React.createElement(Term, props);
+    }
+  };
+};
