@@ -25,13 +25,11 @@ exports.decorateTerm = function (Term, { React }) {
       }
 
       this.term = term;
+      const { screen_, onTerminalReady } = term;
 
-      const { screen_ } = term;
-      const Screen = screen_.constructor;
-      this.overrideScreen(Screen);
+      this.overrideScreen(screen_.constructor);
 
       const self = this;
-      const { onTerminalReady } = term;
       term.onTerminalReady = function () {
         onTerminalReady.apply(this, arguments);
 
