@@ -24,6 +24,15 @@ exports.decorateTerm = function (Term, { React }) {
       const { screen_ } = term;
       const Screen = screen_.constructor;
       this.overrideScreen(Screen);
+
+      const self = this;
+      const { onTerminalReady } = term;
+      term.onTerminalReady = function () {
+        onTerminalReady.apply(this, arguments);
+
+        const screenNode = term.scrollPort_.getScreenNode();
+        screenNode.addEventListener('click', self.onLinkClick.bind(self));
+      }
     }
 
     overrideScreen (Screen) {
@@ -98,26 +107,6 @@ href="${escapeHTML(absoluteUrl)}">${escapeHTML(text)}</a>`;
       }
 
       cursorNode.innerHTML = autolinked;
-
-      if (!cursorRowNode._autolinkHasListener) {
-        cursorRowNode._autolinkHasListener = true;
-        cursorRowNode.addEventListener('click', (e) => {
-          if ('A' !== e.target.nodeName) return;
-
-          e.preventDefault();
-
-          if (e.metaKey) {
-            // open in user's default browser when holding command key
-            shell.openExternal(e.target.href);
-          } else {
-            store.dispatch({
-              type: 'SESSION_URL_SET',
-              uid: this.props.uid,
-              url: e.target.href
-            });
-          }
-        });
-      }
     }
 
     getAbsoluteUrl (url) {
@@ -125,6 +114,23 @@ href="${escapeHTML(absoluteUrl)}">${escapeHTML(text)}</a>`;
       if (0 === url.indexOf('//')) return `http${url}`
       if (emailRe.test(url)) return `mailto:${url}`;
       return `http://${url}`;
+    }
+
+    onLinkClick (e) {
+      if ('A' !== e.target.nodeName) return;
+
+      e.preventDefault();
+
+      if (e.metaKey) {
+        // open in user's default browser when holding command key
+        shell.openExternal(e.target.href);
+      } else {
+        store.dispatch({
+          type: 'SESSION_URL_SET',
+          uid: this.props.uid,
+          url: e.target.href
+        });
+      }
     }
 
     render () {
