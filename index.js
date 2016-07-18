@@ -92,8 +92,8 @@ exports.decorateTerm = function (Term, { React }) {
         } else {
           text = url;
         }
-        autolinked += `<a class="autolink"
-href="${escapeHTML(absoluteUrl)}">${escapeHTML(text)}</a>`;
+
+        autolinked += `<a href="${escapeHTML(absoluteUrl)}">${escapeHTML(text)}</a>`;
       }
 
       autolinked += escapeHTML(textContent.slice(lastIndex));
@@ -144,12 +144,12 @@ href="${escapeHTML(absoluteUrl)}">${escapeHTML(text)}</a>`;
 };
 
 const styles = `
-  .autolink {
+  x-screen a {
     color: #ff2e88;
     text-decoration: none;
   }
 
-  .autolink:hover {
+  x-screen a:hover {
     text-decoration: underline;
   }
 `;
