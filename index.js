@@ -177,7 +177,7 @@ exports.decorateTerm = function (Term, { React }) {
 
 const styles = `
   x-screen a {
-    color: inherit;
+    color: #ff2e88;
     text-decoration: none;
   }
 
