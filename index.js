@@ -36,8 +36,8 @@ exports.decorateTerm = function (Term, { React }) {
     }
 
     overrideScreen (Screen) {
-      if (Screen._autolink) return;
-      Screen._autolink = true;
+      if (Screen._links) return;
+      Screen._links = true;
 
       const self = this;
 
