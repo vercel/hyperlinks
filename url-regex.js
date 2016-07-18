@@ -2,7 +2,7 @@ const ipRegex = require('ip-regex');
 
 // based on https://github.com/kevva/url-regex
 module.exports = function () {
-  const protocol = '(?:(?:[a-z]+:)?//)?';
+  const protocol = '(?:[a-z]+://)';
   const auth = '(?:\\S+(?::\\S*)?@)?';
   const ip = ipRegex.v4().source;
   const host = '(?:(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)';
