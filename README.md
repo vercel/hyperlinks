@@ -2,7 +2,7 @@
 
 Extension for [HyperTerm](https://hyperterm.org) that automatically links URLs.
 
-![Demo](https://cloud.githubusercontent.com/assets/775227/16927068/a27b80ca-4d66-11e6-8547-c9d3c9311d8f.gif)
+![Demo](https://cloud.githubusercontent.com/assets/775227/16933009/4fd309a0-4d85-11e6-99b5-720185f4b7d8.gif)
 
 ## How to use
 
