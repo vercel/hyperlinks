@@ -13,13 +13,18 @@ exports.decorateTerm = function (Term, { React }) {
   return class extends React.Component {
     constructor (props, context) {
       super(props, context);
+
       this.onTerminal = this.onTerminal.bind(this);
+      this.term = null
+      this.id = 0;
     }
 
     onTerminal (term) {
       if (this.props.onTerminal) {
         this.props.onTerminal(term);
       }
+
+      this.term = term;
 
       const { screen_ } = term;
       const Screen = screen_.constructor;
@@ -32,6 +37,8 @@ exports.decorateTerm = function (Term, { React }) {
 
         const screenNode = term.scrollPort_.getScreenNode();
         screenNode.addEventListener('click', self.onLinkClick.bind(self));
+        screenNode.addEventListener('mouseover', self.onLinkMouseOver.bind(self));
+        screenNode.addEventListener('mouseout', self.onLinkMouseOut.bind(self));
       }
     }
 
@@ -85,15 +92,19 @@ exports.decorateTerm = function (Term, { React }) {
         autolinked += escapeHTML(textContent.slice(lastIndex, index));
         lastIndex = re.lastIndex;
 
+        let id;
         let text;
         if (0 === index && lastAnchor) {
           text = url.slice(lastAnchor.textContent.length);
           lastAnchor.href = absoluteUrl;
+          id = lastAnchor.dataset.id;
         } else {
           text = url;
+          id = this.id++;
         }
 
-        autolinked += `<a href="${escapeHTML(absoluteUrl)}">${escapeHTML(text)}</a>`;
+        autolinked += `<a href="${escapeHTML(absoluteUrl)}" data-id="${id}">`
+          + `${escapeHTML(text)}</a>`;
       }
 
       autolinked += escapeHTML(textContent.slice(lastIndex));
@@ -133,6 +144,29 @@ exports.decorateTerm = function (Term, { React }) {
       }
     }
 
+    onLinkMouseOver (e) {
+      if ('A' !== e.target.nodeName) return;
+
+      const { id } = e.target.dataset;
+      for (const a of this.getAnchors(id)) {
+        a.classList.add('hover');
+      }
+    }
+
+    onLinkMouseOut (e) {
+      if ('A' !== e.target.nodeName) return;
+
+      const { id } = e.target.dataset;
+      for (const a of this.getAnchors(id)) {
+        a.classList.remove('hover');
+      }
+    }
+
+    getAnchors (id) {
+      const screenNode = this.term.scrollPort_.getScreenNode();
+      return screenNode.querySelectorAll(`a[data-id="${id}"]`);
+    }
+
     render () {
       const props = Object.assign({}, this.props, {
         onTerminal: this.onTerminal,
@@ -149,7 +183,7 @@ const styles = `
     text-decoration: none;
   }
 
-  x-screen a:hover {
+  x-screen a.hover {
     text-decoration: underline;
   }
 `;
