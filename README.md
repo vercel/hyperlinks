@@ -12,6 +12,23 @@ in `~/.hyperterm.js`.
 - `Ctrl + C` to abort opening url.
 - hold `Command` key and click a link to open it in your default browser.
 
+## Customizing styles
+
+Add cutome styles to `termCSS` in your `~/.hyperterm.js`.
+
+```js
+termCSS: `
+  x-screen a {
+    color: blue;
+  }
+
+  x-screen a.hover {
+    text-decoration: none;
+  }
+`
+```
+
+
 ## License
 
 MIT
