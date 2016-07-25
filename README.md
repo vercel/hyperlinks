@@ -10,7 +10,7 @@ Extension for [HyperTerm](https://hyperterm.org) that automatically links URLs.
 in `~/.hyperterm.js`.
 
 - `Ctrl + C` to abort opening url.
-- hold `Command` key and click a link to open it in your default browser.
+- Just click a link to open it in your default browser.
 
 ## Customizing styles
 
