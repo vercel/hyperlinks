@@ -62,60 +62,84 @@ exports.decorateTerm = function (Term, { React }) {
     }
 
     autolink (screen) {
-      let lastAnchor;
-
-      const cursorRowNode = screen.cursorRowNode_;
-      const previousCursorRowNode = cursorRowNode.previousSibling;
-      if (previousCursorRowNode &&
-        previousCursorRowNode.getAttribute('line-overflow') &&
-        previousCursorRowNode.lastChild &&
-        previousCursorRowNode.lastChild.lastChild &&
-        'A' === previousCursorRowNode.lastChild.lastChild.nodeName) {
-        // get last anchor from previous row
-        lastAnchor = previousCursorRowNode.lastChild.lastChild;
-      }
-
-      const textContent = (lastAnchor ? lastAnchor.textContent : '')
-        + screen.cursorNode_.textContent;
-
-      let re = urlRegex();
-      let autolinked = '';
-      let lastIndex = 0;
-      let match;
-
-      while (match = re.exec(textContent)) {
-        const url = match[0];
-        const absoluteUrl = this.getAbsoluteUrl(url);
-        const index = re.lastIndex - url.length;
-        autolinked += escapeHTML(textContent.slice(lastIndex, index));
-        lastIndex = re.lastIndex;
-
-        let id;
-        let text;
-        if (0 === index && lastAnchor) {
-          text = url.slice(lastAnchor.textContent.length);
-          lastAnchor.href = absoluteUrl;
-          id = lastAnchor.dataset.id;
-        } else {
-          text = url;
-          id = this.id++;
-        }
-
-        autolinked += `<a href="${escapeHTML(absoluteUrl)}" data-id="${id}">`
-          + `${escapeHTML(text)}</a>`;
-      }
-
-      autolinked += escapeHTML(textContent.slice(lastIndex));
-
-      let cursorNode = screen.cursorNode_;
-      if ('#text' === cursorNode.nodeName) {
+      if ('#text' === screen.cursorNode_.nodeName) {
         // replace text node to element
-        cursorNode = document.createElement('span');
-        cursorRowNode.replaceChild(cursorNode, screen.cursorNode_);
+        const cursorNode = document.createElement('span');
+        cursorNode.textContent = screen.cursorNode_.textContent;
+        screen.cursorRowNode_.replaceChild(cursorNode, screen.cursorNode_);
         screen.cursorNode_ = cursorNode;
       }
 
-      cursorNode.innerHTML = autolinked;
+      const rows = [];
+      let lastRow = screen.cursorRowNode_;
+
+      while (true) {
+        rows.unshift(lastRow);
+        if (lastRow.children.length > 1) break;
+        lastRow = lastRow.previousSibling;
+        if (!lastRow || !lastRow.getAttribute('line-overflow')) break;
+      }
+
+      const textContent = rows.map((r) => r.lastChild.textContent).join('');
+      const re = urlRegex();
+      const urls = [];
+      let match;
+
+      while (match = re.exec(textContent)) {
+        const text = match[0];
+        const url = this.getAbsoluteUrl(text);
+        const start = re.lastIndex - text.length;
+        const end = re.lastIndex;
+        const id = this.id++;
+        urls.push({ id, url, start, end });
+      }
+
+      if (!urls.length) return;
+
+      let rowStart = 0;
+      let rowEnd = 0;
+      let urlIndex = 0;
+
+      const htmls = rows.map((row, i) => {
+        rowStart = rowEnd;
+        rowEnd += row.lastChild.textContent.length;
+        let textStart = rowStart;
+
+        let html = '';
+
+        while (urls[urlIndex]) {
+          const { id, url, start, end } = urls[urlIndex];
+
+          if (start > textStart) {
+            const textEnd = start < rowEnd ? start : rowEnd;
+            html += escapeHTML(textContent.slice(textStart, textEnd));
+          }
+
+          if (start < rowEnd) {
+            const urlStart = start > rowStart ? start : rowStart;
+            const urlEnd = end < rowEnd ? end : rowEnd;
+
+            html += `<a href="${escapeHTML(url)}" data-id="${id}">`;
+            html += escapeHTML(textContent.slice(urlStart, urlEnd));
+            html += '</a>';
+          }
+
+          if (end > rowEnd) break;
+
+          textStart = end;
+          urlIndex++;
+        }
+
+        if (!urls[urlIndex]) {
+          html += escapeHTML(textContent.slice(textStart, rowEnd));
+        }
+
+        return html;
+      });
+
+      for (let i = 0, l = rows.length; i < l; i++) {
+        rows[i].lastChild.innerHTML = htmls[i];
+      }
     }
 
     getAbsoluteUrl (url) {
