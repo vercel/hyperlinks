@@ -9,5 +9,6 @@
     "escape-html": "1.0.3",
     "ip-regex": "1.0.3",
     "url-regex": "3.2.0"
-  }
+  },
+  "license": "MIT"
 }
