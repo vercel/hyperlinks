@@ -154,15 +154,15 @@ exports.decorateTerm = function (Term, { React }) {
 
       e.preventDefault();
 
-      if (e.metaKey) {
-        // open in user's default browser when holding command key
-        shell.openExternal(e.target.href);
-      } else {
+      if (e.metaKey || e.altKey) {  // metaKey has other uses on Ubuntu which conflict with the action, so altKey is an alternative
         store.dispatch({
           type: 'SESSION_URL_SET',
           uid: this.props.uid,
           url: e.target.href
         });
+      } else {
+        // open in user's default browser by default
+        shell.openExternal(e.target.href);
       }
     }
 
