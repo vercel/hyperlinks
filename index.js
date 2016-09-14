@@ -1,11 +1,12 @@
-/* global store */
+/* global store, config */
 const { shell } = require('electron')
 const escapeHTML = require('escape-html')
 const emailRegex = require('email-regex')
 const urlRegex = require('./url-regex')
+const exec = require('child_process').exec
 
 const emailRe = emailRegex({ exact: true })
-const stackTraceRe = /at (.*) \(\/(.*):\d:\d\)/g
+const stackTraceRe = /\((\/.*:\d*:\d*)\)/g
 
 exports.getTermProps = function (uid, parentProps, props) {
   return Object.assign(props, {uid})
@@ -99,11 +100,11 @@ exports.decorateTerm = function (Term, { React }) {
       if (!urls.length) {
         match = stackTraceRe.exec(textContent)
         if (match) {
-          const url = '/' + match[2]
+          const url = match[1]
           const start = textContent.indexOf('/')
           const end = textContent.indexOf(')')
           const id = this.id++
-          urls.push({id, url, start, end, isFileName: true})
+          urls.push({id, url, start, end, fileName: url})
         }
       }
       if (!urls.length) return
@@ -120,7 +121,7 @@ exports.decorateTerm = function (Term, { React }) {
         let html = ''
 
         while (urls[urlIndex]) {
-          const { id, url, start, end, isFileName } = urls[urlIndex]
+          const { id, url, start, end, fileName } = urls[urlIndex]
 
           if (start > textStart) {
             const textEnd = start < rowEnd ? start : rowEnd
@@ -131,7 +132,7 @@ exports.decorateTerm = function (Term, { React }) {
             const urlStart = start > rowStart ? start : rowStart
             const urlEnd = end < rowEnd ? end : rowEnd
 
-            html += `<a href="${escapeHTML(url)}" data-id="${id}" data-is-file-name="${isFileName}">`
+            html += `<a href="${escapeHTML(url)}" data-id="${id}" data-file-name="${fileName}">`
             html += escapeHTML(textContent.slice(urlStart, urlEnd))
             html += '</a>'
           }
@@ -165,8 +166,15 @@ exports.decorateTerm = function (Term, { React }) {
       if (e.target.nodeName !== 'A') return
 
       e.preventDefault()
-      if (e.target.getAttribute('data-is-file-name') === 'true') {
-        return shell.openExternal(e.target.href)
+      const fileName = e.target.getAttribute('data-file-name')
+      if (fileName) {
+        let editor
+        try {
+          editor = config.getConfig().clicky.editor
+        } catch (err) {
+          editor = 'atom'
+        }
+        return exec(editor + ' ' + fileName)
       }
       if (e.metaKey || e.altKey) { // metaKey has other uses on Ubuntu which conflict with the action, so altKey is an alternative
         store.dispatch({
