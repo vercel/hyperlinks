@@ -1,6 +1,8 @@
 # hyperterm-clicky
 
-Extension for [HyperTerm](https://hyperterm.org) that automatically links URLs and local files in node.js stack traces.
+Extension for [HyperTerm](https://hyperterm.org) that automatically links:
+- URLs
+- local files in stack traces(opened in an editor of your choice)
 
 ![Demo](https://cloud.githubusercontent.com/assets/775227/16933009/4fd309a0-4d85-11e6-99b5-720185f4b7d8.gif)
 
