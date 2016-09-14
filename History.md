@@ -1,3 +1,4 @@
+For newer release notes, please refer to github realease notes. 
 
 0.2.1 / 2016-08-30
 ==================
@@ -14,5 +15,3 @@
 ==================
 
   * initial release
-
-
