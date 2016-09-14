@@ -1,6 +1,6 @@
 {
   "name": "hyperterm-clicky",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Extension for HyperTerm that automatically links URLs and local files",
   "repository": "https://github.com/capaj/hyperterm-clicky",
   "keywords": [

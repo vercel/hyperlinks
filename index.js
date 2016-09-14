@@ -131,8 +131,12 @@ exports.decorateTerm = function (Term, { React }) {
           if (start < rowEnd) {
             const urlStart = start > rowStart ? start : rowStart
             const urlEnd = end < rowEnd ? end : rowEnd
-
-            html += `<a href="${escapeHTML(url)}" data-id="${id}" data-file-name="${fileName}">`
+            let anchor
+            if (fileName) {
+              anchor = `<a href="${escapeHTML(url)}" data-id="${id}" data-file-name="${fileName}">`
+            }
+            anchor = `<a href="${escapeHTML(url)}" data-id="${id}">`
+            html += anchor
             html += escapeHTML(textContent.slice(urlStart, urlEnd))
             html += '</a>'
           }
