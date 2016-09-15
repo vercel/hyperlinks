@@ -20,7 +20,7 @@ clicky:{
   editor: 'subl'
 },
 ```
-for VSCode you are in a pickle, because it doesn't support opening from CLI with :line:collumn at the end.
+for VSCode use `code -g`.
 
 
 ## Customizing styles
