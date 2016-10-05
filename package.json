@@ -1,14 +1,23 @@
 {
-  "name": "hyperlinks",
-  "version": "0.2.1",
-  "description": "Extension for HyperTerm that automatically links URLs",
-  "repository": "https://github.com/zeit/hyperlinks",
-  "keywords": ["hyperterm"],
+  "name": "hyperterm-clicky",
+  "version": "0.2.4",
+  "description": "Extension for HyperTerm that automatically links URLs and local files",
+  "repository": "https://github.com/capaj/hyperterm-clicky",
+  "keywords": [
+    "hyperterm",
+    "clickable"
+  ],
   "dependencies": {
     "email-regex": "1.0.0",
     "escape-html": "1.0.3",
     "ip-regex": "1.0.3",
     "url-regex": "4.0.0"
   },
-  "license": "MIT"
+  "scripts": {
+    "test": "standard"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "standard": "^8.0.0"
+  }
 }
