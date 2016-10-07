@@ -1,7 +1,7 @@
 {
   "name": "hyperlinks",
   "version": "0.2.1",
-  "description": "Extension for HyperTerm that automatically links URLs",
+  "description": "Extension for Hyper that automatically links URLs",
   "repository": "https://github.com/zeit/hyperlinks",
   "keywords": ["hyperterm"],
   "dependencies": {
