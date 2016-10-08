@@ -27,8 +27,3 @@ termCSS: `
   }
 `
 ```
-
-
-## License
-
-MIT
