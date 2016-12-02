@@ -154,7 +154,21 @@ exports.decorateTerm = function (Term, { React }) {
 
       e.preventDefault();
 
-      if (e.metaKey) {
+      const defaultBrowserConfig = (function(config){
+        if (
+          config.hasOwnProperty('hyperlinks') &&
+          typeof config.hyperlinks.defaultBrowser == 'boolean'
+        ){
+          return config.hyperlinks.defaultBrowser;
+        }
+        return false;
+      })(window.config.getConfig());
+
+      const openExternal =
+        (defaultBrowserConfig && !e.metaKey) ||
+        (!defaultBrowserConfig && e.metaKey);
+
+      if (openExternal) {
         // open in user's default browser when holding command key
         shell.openExternal(e.target.href);
       } else {
