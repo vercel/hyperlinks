@@ -27,3 +27,20 @@ termCSS: `
   }
 `
 ```
+
+## Configure Options
+
+### Setting for open a link in default browser
+Open in default browser when click a link.
+If holding Meta(Command) key then a link open in the Hyper.
+
+Default is `false`.
+
+#### e.g.) Add below config to the `.hyper`.
+```js
+config: {
+  hyperlinks: {
+    defaultBrowser: true
+  }
+}
+```
