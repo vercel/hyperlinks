@@ -14,7 +14,7 @@ in `~/.hyper.js`.
 
 ## Customizing styles
 
-Add cutome styles to `termCSS` in your `~/.hyper.js`.
+Add custom styles to `termCSS` in your `~/.hyper.js`.
 
 ```js
 termCSS: `
