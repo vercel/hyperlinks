@@ -161,7 +161,7 @@ exports.decorateTerm = function (Term, { React }) {
         ){
           return config.hyperlinks.defaultBrowser;
         }
-        return false;
+        return true;
       })(window.config.getConfig());
 
       const openExternal =

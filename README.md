@@ -34,13 +34,13 @@ termCSS: `
 Open in default browser when click a link.
 If holding Meta(Command) key then a link open in the Hyper.
 
-Default is `false`.
+Default is `true`.
 
 #### e.g.) Add below config to the `.hyper`.
 ```js
 config: {
   hyperlinks: {
-    defaultBrowser: true
+    defaultBrowser: false
   }
 }
 ```
