@@ -1,9 +1,12 @@
 {
   "name": "hyperlinks",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Extension for Hyper that automatically links URLs",
   "repository": "https://github.com/zeit/hyperlinks",
-  "keywords": ["hyper", "hyper.app"],
+  "keywords": [
+    "hyper",
+    "hyper.app"
+  ],
   "dependencies": {
     "email-regex": "1.0.0",
     "escape-html": "1.0.3",
