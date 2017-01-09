@@ -10,7 +10,7 @@
   "dependencies": {
     "email-regex": "1.0.0",
     "escape-html": "1.0.3",
-    "ip-regex": "1.0.3",
+    "ip-regex": "2.0.0",
     "url-regex": "4.0.0"
   },
   "license": "MIT"
