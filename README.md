@@ -30,19 +30,33 @@ termCSS: `
 
 ## Configuration
 
-### Setting for open a link in default browser
+### Change link target
+`defaultBrowser` (`boolean`)
+Sets the location to open a clicked link. Holding the meta key while clicking will use the alternate target.
 
-Open in default browser when click a link.
-If holding Meta(Command) key then a link open in the Hyper.
+- true - <default> open links in the default browser
+- false - opens link in the current Hyper pane
 
-Default is `true`.
+### Change click action
+`clickAction` (`string`)
+Changes the action performed when clicking on a link
+If set, holding the meta key while clicking will open the link based on the defaultBrowser value.
 
-### e.g.) Add below config to the `.hyper`.
+- 'open' - <default> opens the link
+- 'copy' - pastes the link to your clipboard
+- 'ignore' - ignore non-Meta clicks on links
 
 ```js
-config: {
-  hyperlinks: {
-    defaultBrowser: false
+module.exports = {
+  ...
+    config: {
+    ...
+    hyperlinks: {
+    	clickAction: 'ignore',
+      defaultBrowser: false
+    }
+    ...
   }
+  ...
 }
 ```
