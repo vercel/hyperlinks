@@ -52,7 +52,7 @@ module.exports = {
     config: {
     ...
     hyperlinks: {
-    	clickAction: 'ignore',
+      clickAction: 'ignore',
       defaultBrowser: false
     }
     ...
