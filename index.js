@@ -5,6 +5,10 @@ const urlRegex = require('./url-regex');
 
 const emailRe = emailRegex({ exact: true });
 
+const DEFAULT_CONFIG = {
+  defaultBrowser: false
+};
+
 exports.getTermProps = function (uid, parentProps, props) {
   return Object.assign(props, { uid });
 };
@@ -15,6 +19,7 @@ exports.decorateTerm = function (Term, { React }) {
       super(props, context);
 
       this.onTerminal = this.onTerminal.bind(this);
+      this.config = null
       this.term = null
       this.id = 0;
     }
@@ -24,6 +29,7 @@ exports.decorateTerm = function (Term, { React }) {
         this.props.onTerminal(term);
       }
 
+      this.config = Object.assign({}, DEFAULT_CONFIG, window.config.getConfig().hyperlinks);
       this.term = term;
       const { screen_, onTerminalReady } = term;
 
@@ -154,19 +160,11 @@ exports.decorateTerm = function (Term, { React }) {
 
       e.preventDefault();
 
-      const defaultBrowserConfig = (function(config){
-        if (
-          config.hasOwnProperty('hyperlinks') &&
-          typeof config.hyperlinks.defaultBrowser == 'boolean'
-        ){
-          return config.hyperlinks.defaultBrowser;
-        }
-        return true;
-      })(window.config.getConfig());
+      const {defaultBrowser} = this.config;
 
       const openExternal =
-        (defaultBrowserConfig && !e.metaKey) ||
-        (!defaultBrowserConfig && e.metaKey);
+        (defaultBrowser && !e.metaKey) ||
+        (!defaultBrowser && e.metaKey);
 
       if (openExternal) {
         // open in user's default browser when holding command key
