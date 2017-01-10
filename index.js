@@ -1,4 +1,4 @@
-const { shell } = require('electron');
+const { shell, clipboard } = require('electron');
 const escapeHTML = require('escape-html');
 const emailRegex = require('email-regex');
 const urlRegex = require('./url-regex');
@@ -6,7 +6,8 @@ const urlRegex = require('./url-regex');
 const emailRe = emailRegex({ exact: true });
 
 const DEFAULT_CONFIG = {
-  defaultBrowser: false
+  defaultBrowser: true,
+  clickAction: 'open'
 };
 
 exports.getTermProps = function (uid, parentProps, props) {
@@ -159,23 +160,61 @@ exports.decorateTerm = function (Term, { React }) {
       if ('A' !== e.target.nodeName) return;
 
       e.preventDefault();
-
-      const {defaultBrowser} = this.config;
-
-      const openExternal =
-        (defaultBrowser && !e.metaKey) ||
-        (!defaultBrowser && e.metaKey);
-
-      if (openExternal) {
-        // open in user's default browser when holding command key
-        shell.openExternal(e.target.href);
-      } else {
-        store.dispatch({
-          type: 'SESSION_URL_SET',
-          uid: this.props.uid,
-          url: e.target.href
-        });
+      const {defaultBrowser, clickAction} = this.config;
+      const url = e.target.href;
+      const isMetaAction = e.metaKey;
+      // If holding down the meta key we'll always open the link
+      if (isMetaAction) {
+        // if there is a custom click action invert the target when Meta Clicking.
+        const target = clickAction !== 'open' ? !defaultBrowser : defaultBrowser;
+        this.getHandler(target, isMetaAction)(url);
+        return;
       }
+      switch (clickAction) {
+        case 'ignore':
+          break;
+        case 'copy':
+          this.copyToClipBoard(url);
+          break;
+        default: // 'open'
+          this.getHandler(defaultBrowser, isMetaAction)(url);
+
+      }
+    }
+    /**
+     * Determines whether to open in the browser or Hyper
+     * @param  {Boolean} defaultBrowser if clicked links open in browser
+     * @param  {Boolean} isMeta If modifier key is pressed
+     * @return {Function} Handler for the link
+     */
+    getHandler(defaultBrowser, isMeta) {
+      if (defaultBrowser === isMeta) { return this.handleInHyper.bind(this); }
+      return this.handleInBrowser.bind(this);
+    }
+    /**
+     * opens a clicked link in the hyper terminal
+     * @param  {String} url clicked url
+     */
+    handleInHyper(url) {
+      store.dispatch({
+        type: 'SESSION_URL_SET',
+        uid: this.props.uid,
+        url: url
+      });
+    }
+    /**
+     * opens a clicked link in the user's default browser
+     * @param  {String} url clicked url
+     */
+    handleInBrowser(url) {
+      shell.openExternal(url);
+    }
+    /**
+     * copies a string to the clipboard
+     * @param  {String} string to copy
+     */
+    copyToClipBoard(text) {
+      clipboard.writeText(text);
     }
 
     onLinkMouseOver (e) {
