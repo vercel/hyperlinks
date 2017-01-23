@@ -1,5 +1,7 @@
 # hyperlinks
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/zeit/hyperlinks.svg)](https://greenkeeper.io/)
+
 Extension for [Hyper](https://hyper.is) that automatically links URLs.
 
 ![Demo](https://cloud.githubusercontent.com/assets/775227/16933009/4fd309a0-4d85-11e6-99b5-720185f4b7d8.gif)
