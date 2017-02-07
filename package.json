@@ -1,6 +1,6 @@
 {
   "name": "hyperlinks",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Extension for Hyper that automatically links URLs",
   "repository": "https://github.com/zeit/hyperlinks",
   "keywords": [
