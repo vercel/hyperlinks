@@ -15,5 +15,12 @@ module.exports = function () {
     port, path
   ].join('');
 
-  return new RegExp(regex, 'ig');
+  const match = [['<', '>'], ['[', ']'], ['(', ')']]
+    .map(function(bracket) {
+      return `(?<=\\${bracket[0]})${regex}(?=\\${bracket[1]})`;
+    })
+    .concat(regex)
+    .join('|');
+
+  return new RegExp(match, 'ig');
 };
