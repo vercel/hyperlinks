@@ -49,7 +49,7 @@ If set, holding the meta key while clicking will open the link based on the defa
 ```js
 module.exports = {
   ...
-    config: {
+  config: {
     ...
     hyperlinks: {
       clickAction: 'ignore',
